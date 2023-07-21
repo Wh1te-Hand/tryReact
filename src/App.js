@@ -18,6 +18,8 @@ function App() {
     {id:4,title:'The lord of the rings', body:'Saruman'}
   ])
 
+  const [selectedSort,setSelectedSort]=useState('')
+
   function removePost(post){
   setPosts(posts.filter((p)=>p.id!==post.id))
   }
@@ -26,6 +28,10 @@ function App() {
   
 function createPost(newPost){
   setPosts([...posts,newPost])
+}
+function sortPosts(sort){
+  setSelectedSort(sort);
+  setPosts([...posts].sort((a,b)=>{a[sort].localeCompare(b[sort])}))
 }
 
   return (
@@ -36,6 +42,8 @@ function createPost(newPost){
     <hr style={{margin:'15px 0px'}}></hr>
 
     <MySelect
+      value={selectedSort}
+      onChange={sortPosts}
       defaultValue="Sort posts"
       options={[
         {value:"title",name:"By name"},
