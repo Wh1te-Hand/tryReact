@@ -1,6 +1,7 @@
 import React, { useMemo, useRef } from 'react';
 import  { useState } from 'react';
 import Counter from './components/Counter';
+import PostFilter from './components/PostFilter';
 import PostFormCreator from './components/PostFormCreator';
 import PostItem from './components/PostItem';
 import PostList from './components/PostList';
@@ -19,8 +20,7 @@ function App() {
   ])
 
   // const bodyRef=useRef();
-  const [selectedSort,setSelectedSort]=useState('')
-  const [searchQuery,setSearchQuery]=useState('')
+  const [filter,setFilter]=useState({sort:'',query:''})
 
   function removePost(post){
   setPosts(posts.filter(p=>p.id!==post.id))
@@ -30,21 +30,16 @@ function App() {
     setPosts([...posts,newPost])
   }
 
-function sortPosts(sort){
-  setSelectedSort(sort);
-}
-
 const sortedPosts=useMemo(()=>{
-  if (selectedSort){
-   // console.log([...posts].sort((a,b)=>{a[selectedSort].localeCompare(b[selectedSort])}))
-    return [...posts].sort((a,b)=>a[selectedSort].localeCompare(b[selectedSort]));
+  if (filter.sort){
+    return [...posts].sort((a,b)=>a[filter.sort].localeCompare(b[filter.sort]));
   }
   return posts;
-}, [selectedSort,posts]);
+}, [filter.sort,posts]);
 
 const sortAndSearchPosts=useMemo(()=>{
-return sortedPosts.filter(post=>post.title.toLowerCase().includes(searchQuery))
-},[searchQuery,sortedPosts])
+return sortedPosts.filter(post=>post.title.toLowerCase().includes(filter.query))
+},[filter.query,sortedPosts])
 
   return (
     <div className="App">
@@ -53,29 +48,13 @@ return sortedPosts.filter(post=>post.title.toLowerCase().includes(searchQuery))
 
     <hr style={{margin:'15px 0px'}}></hr>
 
-    <MyInput
-    value={searchQuery}
-    onChange={e=>setSearchQuery(e.target.value)}
-    placeholder="Search"
-    />
-
-    <MySelect
-      value={selectedSort}
-      onChange={sortPosts}
-      defaultValue="Sort posts"
-      options={[
-        {value:"title",name:"By name"},
-        {value:"body",name:"By description"}
-      ]}
-    />
-
-    {sortAndSearchPosts.length!==0
-    ? 
-      <PostList remove={removePost} posts={sortAndSearchPosts} title='List  of posts'/>
-    :
-      <h1><div style={{textAlign:'center'}}>Empty</div></h1>
-    }  
-    
+   <PostFilter
+     filter={filter}
+     setFilter={setFilter}
+   /> 
+   
+    <PostList remove={removePost} posts={sortAndSearchPosts} title='List  of posts'/>
+       
     </div>
   );
 
