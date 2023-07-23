@@ -1,4 +1,4 @@
-import React, { useRef } from 'react';
+import React, { useMemo, useRef } from 'react';
 import  { useState } from 'react';
 import Counter from './components/Counter';
 import PostFormCreator from './components/PostFormCreator';
@@ -14,25 +14,37 @@ function App() {
   const [posts,setPosts]=useState([
     {id:1,title:'The lord of the rings', body:'Saruman'},
     {id:2,title:'The lord of the rings', body:'Saruman'},
-    {id:3,title:'The lord of the rings', body:'Saruman'},
-    {id:4,title:'The lord of the rings', body:'Saruman'}
+    {id:3,title:'The lord of the rings', body:'dura'},
+    {id:4,title:'The lord of the rings', body:'abuda'}
   ])
 
+  // const bodyRef=useRef();
   const [selectedSort,setSelectedSort]=useState('')
+  const [searchQuery,setSearchQuery]=useState('')
 
   function removePost(post){
-  setPosts(posts.filter((p)=>p.id!==post.id))
+  setPosts(posts.filter(p=>p.id!==post.id))
+  }
+  
+  function createPost(newPost){
+    setPosts([...posts,newPost])
   }
 
-// const bodyRef=useRef();
-  
-function createPost(newPost){
-  setPosts([...posts,newPost])
-}
 function sortPosts(sort){
   setSelectedSort(sort);
-  setPosts([...posts].sort((a,b)=>{a[sort].localeCompare(b[sort])}))
 }
+
+const sortedPosts=useMemo(()=>{
+  if (selectedSort){
+   // console.log([...posts].sort((a,b)=>{a[selectedSort].localeCompare(b[selectedSort])}))
+    return [...posts].sort((a,b)=>a[selectedSort].localeCompare(b[selectedSort]));
+  }
+  return posts;
+}, [selectedSort,posts]);
+
+const sortAndSearchPosts=useMemo(()=>{
+return sortedPosts.filter(post=>post.title.toLowerCase().includes(searchQuery))
+},[searchQuery,sortedPosts])
 
   return (
     <div className="App">
@@ -40,6 +52,12 @@ function sortPosts(sort){
     <PostFormCreator create={createPost}/>
 
     <hr style={{margin:'15px 0px'}}></hr>
+
+    <MyInput
+    value={searchQuery}
+    onChange={e=>setSearchQuery(e.target.value)}
+    placeholder="Search"
+    />
 
     <MySelect
       value={selectedSort}
@@ -51,9 +69,9 @@ function sortPosts(sort){
       ]}
     />
 
-    {posts.length!==0
+    {sortAndSearchPosts.length!==0
     ? 
-      <PostList remove={removePost} posts={posts} title='List  of posts'/>
+      <PostList remove={removePost} posts={sortAndSearchPosts} title='List  of posts'/>
     :
       <h1><div style={{textAlign:'center'}}>Empty</div></h1>
     }  
