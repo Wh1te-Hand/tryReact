@@ -14,7 +14,7 @@ import MySelect from './components/UI/select/MySelect';
 import { useFetching } from './hooks/useFetching';
 import { usePosts } from './hooks/usePosts';
 import './styles/App.css'
-import { getPageCount } from './utils/pageUtils/pages';
+import { getPageCount, getPagesArray } from './utils/pageUtils/pages';
 
 
 function App() {
@@ -32,7 +32,7 @@ function App() {
   const [limit,setLimit]=useState(10);
   const [page,setPage]=useState(1);
   const sortedAnsSearchedPosts=usePosts(posts,filter.sort,filter.query);
-    // Добавить пакет аксиос и транзитион групп плюс ссылку на ресурс
+  let pagesArray=getPagesArray(totalPages);
 
   const [fetchPosts,isLoadingPostPage,postError]=useFetching(async ()=>{
     const response=await PostService.getPostsFromJSON(limit,page);
@@ -82,6 +82,17 @@ function App() {
     <PostList remove={removePost} posts={sortedAnsSearchedPosts} title='List  of posts'/>
     }
        
+<div className='page_wrapper'>
+{pagesArray.map(p=>
+<span 
+onClick={()=>setPage(p)}
+key={p}
+className={page===p?'page_button page_current':'page_button'}>
+{p}
+</span>
+)}
+</div>
+
     </div>
   );
 

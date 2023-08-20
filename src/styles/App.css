@@ -47,3 +47,19 @@ opacity:1;
 transform:translateX(-350px);
 transition:all 500ms ease-in;
 }
+
+.page_wrapper{
+    margin-top: 30px;
+    display: flex;
+}
+
+.page_button{
+    padding: 10px;
+    border: 1px solid teal;
+    cursor: pointer;
+}
+
+.page_current{
+    border: 2px solid crimson;
+    font-weight: bold;
+}
