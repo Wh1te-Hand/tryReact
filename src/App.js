@@ -14,6 +14,7 @@ import MySelect from './components/UI/select/MySelect';
 import { useFetching } from './hooks/useFetching';
 import { usePosts } from './hooks/usePosts';
 import './styles/App.css'
+import { getPageCount } from './utils/pageUtils/pages';
 
 
 function App() {
@@ -27,7 +28,7 @@ function App() {
   // const bodyRef=useRef();
   const [filter,setFilter]=useState({sort:'',query:''});
   const [modal,setModal]=useState(false);
-  const [totalCount,setTotalCount]=useState(0);
+  const [totalPages,setTotalPages]=useState(0);
   const [limit,setLimit]=useState(10);
   const [page,setPage]=useState(1);
   const sortedAnsSearchedPosts=usePosts(posts,filter.sort,filter.query);
@@ -36,7 +37,8 @@ function App() {
   const [fetchPosts,isLoadingPostPage,postError]=useFetching(async ()=>{
     const response=await PostService.getPostsFromJSON(limit,page);
     setPosts(response.data);    
-    setTotalCount(response.headers['x-total-count'])
+    const totalCount=response.headers['x-total-count'];
+    setTotalPages(getPageCount(totalCount,limit))
   })
 
   useEffect(() => {
